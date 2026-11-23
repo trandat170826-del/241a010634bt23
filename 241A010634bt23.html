@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game kiểm tra tốc độ phản xạ</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #f0f4f8;
+        }
+
+        h1 {
+            color: #2563eb;
+        }
+
+        .info {
+            margin: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #arena {
+            width: 600px;
+            height: 400px;
+            background: #dbeafe;
+            border: 3px solid #2563eb;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #target {
+            width: 30px;
+            height: 30px;
+            background: #ef4444;
+            border-radius: 50%;
+            position: absolute;
+            display: none;
+            cursor: pointer;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        #result {
+            font-size: 22px;
+            font-weight: bold;
+            color: #16a34a;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>GAME KIỂM TRA TỐC ĐỘ PHẢN XẠ</h1>
+
+    <div class="info">
+        Điểm số: <span id="score">0</span>
+        &nbsp; | &nbsp;
+        Thời gian: <span id="time">30</span> giây
+    </div>
+
+    <button id="startBtn" onclick="startGame()">
+        Bắt đầu trò chơi
+    </button>
+
+    <div id="arena">
+        <div id="target" onclick="hitTarget()"></div>
+    </div>
+
+    <p id="result"></p>
+
+    <script>
+        let score = 0;
+        let timeLeft = 30;
+        let timer;
+        let moveTimer;
+        let playing = false;
+
+        const target = document.getElementById("target");
+        const arena = document.getElementById("arena");
+
+        // Tạo mục tiêu tại vị trí ngẫu nhiên
+        function moveTarget() {
+            const maxLeft = arena.clientWidth - target.offsetWidth;
+            const maxTop = arena.clientHeight - target.offsetHeight;
+
+            const left = Math.random() * maxLeft;
+            const top = Math.random() * maxTop;
+
+            target.style.left = left + "px";
+            target.style.top = top + "px";
+        }
+
+        // Bắt đầu trò chơi
+        function startGame() {
+            clearInterval(timer);
+            clearInterval(moveTimer);
+
+            score = 0;
+            timeLeft = 30;
+            playing = true;
+
+            document.getElementById("score").textContent = score;
+            document.getElementById("time").textContent = timeLeft;
+            document.getElementById("result").textContent = "";
+
+            document.getElementById("startBtn").disabled = true;
+
+            target.style.display = "block";
+            moveTarget();
+
+            // Mục tiêu tự đổi vị trí mỗi giây
+            moveTimer = setInterval(moveTarget, 1000);
+
+            // Đếm ngược 30 giây
+            timer = setInterval(function() {
+                timeLeft--;
+                document.getElementById("time").textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        // Khi click trúng mục tiêu
+        function hitTarget() {
+            if (!playing) return;
+
+            score++;
+            document.getElementById("score").textContent = score;
+
+            moveTarget();
+        }
+
+        // Kết thúc trò chơi
+        function endGame() {
+            playing = false;
+
+            clearInterval(timer);
+            clearInterval(moveTimer);
+
+            target.style.display = "none";
+
+            document.getElementById("startBtn").disabled = false;
+
+            document.getElementById("result").textContent =
+                "Trò chơi kết thúc! Tổng điểm của bạn: " + score;
+        }
+    </script>
+
+</body>
+</html>
